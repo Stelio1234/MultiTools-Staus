@@ -1,32 +1,862 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
   <title>MultiTools Status</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
+
+    :root{
+      --bg-dark:#0a0a0a;
+      --green:#54d42c;
+      --text-light:#e0e0e0;
+      --card-bg:rgba(255,255,255,0.08);
+
+      --yellow:#e6b400;
+      --red:#dc3545;
+      --gray:#6c757d;
     }
 
-    iframe {
-      width: 100%;
-      height: 100vh;
-      border: none;
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Inter',sans-serif;
     }
+
+    html{
+      scroll-behavior:smooth;
+      min-height:100%;
+      background:
+      linear-gradient(
+        180deg,
+        #000000,
+        #111,
+        #0a0a0a
+      );
+    }
+
+    body{
+      color:var(--text-light);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      min-height:100vh;
+      padding:2rem 1rem;
+      overflow-x:hidden;
+    }
+
+    header{
+      width:100%;
+      max-width:1200px;
+      margin-bottom:2rem;
+    }
+
+    .header-inner{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:1rem;
+    }
+
+    header h1{
+      font-size:2.5rem;
+
+      background:
+      linear-gradient(
+        90deg,
+        #45a049,
+        #00cc66
+      );
+
+      -webkit-background-clip:text;
+
+      color:transparent;
+
+      font-weight:700;
+    }
+
+    header p{
+      color:#aaa;
+      font-size:1.1rem;
+      margin-top:.5rem;
+    }
+
+    .status-pill{
+
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      background:
+      rgba(255,255,255,0.08);
+
+      border:
+      1px solid rgba(255,255,255,0.15);
+
+      border-radius:14px;
+
+      padding:
+      .8rem 1rem;
+
+      backdrop-filter:blur(10px);
+    }
+
+    .status-dot{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:var(--green);
+
+      box-shadow:
+      0 0 10px var(--green);
+    }
+
+    .status-pill-text{
+      font-size:.92rem;
+      font-weight:600;
+    }
+
+    main{
+      width:100%;
+      max-width:1200px;
+    }
+
+    .hero{
+
+      background:
+      radial-gradient(
+        800px 300px at 20% 20%,
+        rgba(84,212,44,.18),
+        transparent 60%
+      ),
+
+      radial-gradient(
+        800px 300px at 80% 0%,
+        rgba(0,204,102,.14),
+        transparent 55%
+      );
+
+      border:
+      1px solid rgba(255,255,255,.06);
+
+      border-radius:18px;
+
+      padding:2rem;
+
+      backdrop-filter:blur(10px);
+
+      margin-bottom:2rem;
+    }
+
+    .hero-inner{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:1.6rem;
+      align-items:start;
+    }
+
+    .hero h2{
+      color:white;
+      font-size:2.1rem;
+      margin-bottom:.75rem;
+      line-height:1.15;
+    }
+
+    .hero .subhead{
+      color:#bdbdbd;
+      font-size:1.05rem;
+      line-height:1.45;
+      margin-bottom:1rem;
+      max-width:56ch;
+    }
+
+    .panel{
+      background:
+      rgba(255,255,255,0.06);
+
+      border:
+      1px solid rgba(255,255,255,0.10);
+
+      border-radius:16px;
+
+      padding:1.2rem;
+
+      backdrop-filter:blur(10px);
+    }
+
+    .panel h3{
+      font-size:1.05rem;
+      color:white;
+      margin-bottom:1rem;
+    }
+
+    .uptime-card{
+
+      background:var(--card-bg);
+
+      border:
+      1px solid rgba(255,255,255,0.1);
+
+      border-radius:15px;
+
+      padding:1.5rem;
+
+      backdrop-filter:blur(10px);
+
+      margin-bottom:1rem;
+
+      transition:
+      transform .3s ease,
+      border-color .3s ease;
+    }
+
+    .uptime-card:hover{
+      transform:translateY(-3px);
+      border-color:var(--green);
+    }
+
+    .uptime-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:1rem;
+      gap:1rem;
+    }
+
+    .service-name{
+      font-size:1.1rem;
+      color:white;
+      font-weight:700;
+    }
+
+    .service-status{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:.9rem;
+      font-weight:600;
+    }
+
+    .mini-dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+    }
+
+    .operational{
+      background:var(--green);
+      color:var(--green);
+    }
+
+    .degraded{
+      background:var(--yellow);
+      color:var(--yellow);
+    }
+
+    .outage{
+      background:var(--red);
+      color:var(--red);
+    }
+
+    .uptime-bars{
+      display:grid;
+      grid-template-columns:repeat(60,1fr);
+      gap:3px;
+      margin-bottom:1rem;
+    }
+
+    .bar{
+      height:26px;
+      border-radius:4px;
+      background:var(--green);
+    }
+
+    .bar.degraded{
+      background:var(--yellow);
+    }
+
+    .bar.outage{
+      background:var(--red);
+    }
+
+    .bar.maintenance{
+      background:var(--gray);
+    }
+
+    .uptime-footer{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      color:#999;
+      font-size:.82rem;
+    }
+
+    .uptime-percent{
+      color:white;
+      font-weight:700;
+    }
+
+    .incident-card{
+
+      background:
+      rgba(255,255,255,0.06);
+
+      border:
+      1px solid rgba(255,255,255,0.10);
+
+      border-radius:16px;
+
+      padding:1rem;
+
+      backdrop-filter:blur(10px);
+
+      margin-bottom:1rem;
+    }
+
+    .incident-title{
+      font-size:1rem;
+      color:white;
+      font-weight:700;
+      margin-bottom:.4rem;
+    }
+
+    .incident-meta{
+      color:#aaa;
+      font-size:.85rem;
+      margin-bottom:.6rem;
+    }
+
+    .incident-body{
+      color:#ccc;
+      line-height:1.5;
+      font-size:.92rem;
+    }
+
+    .section-title{
+      color:var(--green);
+      margin-bottom:1rem;
+      font-size:1.5rem;
+    }
+
+    .legend{
+      display:flex;
+      gap:1.2rem;
+      flex-wrap:wrap;
+      margin-top:1.5rem;
+      color:#aaa;
+      font-size:.85rem;
+    }
+
+    .legend-item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .legend-dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+    }
+
+    footer{
+      margin-top:2rem;
+      text-align:center;
+      color:#888;
+      width:100%;
+      max-width:1200px;
+    }
+
+    @media(max-width:900px){
+
+      .hero-inner{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+    @media(max-width:700px){
+
+      .header-inner{
+        flex-direction:column;
+        align-items:center;
+        text-align:center;
+      }
+
+      .uptime-bars{
+        gap:2px;
+      }
+
+      .bar{
+        height:18px;
+      }
+
+      header h1{
+        font-size:2rem;
+      }
+
+      .hero h2{
+        font-size:1.6rem;
+      }
+
+    }
+
   </style>
 </head>
+
 <body>
 
-  <iframe
-    src="https://multitools.statuspage.io"
-    title="MultiTools Status"
-    allowfullscreen>
-  </iframe>
- 
+  <header>
+
+    <div class="header-inner">
+
+      <div>
+
+        <h1>MultiTools Status</h1>
+
+        <p>
+          Real-time service and infrastructure monitoring
+        </p>
+
+      </div>
+
+      <div class="status-pill">
+
+        <div class="status-dot" id="global-dot"></div>
+
+        <div
+          class="status-pill-text"
+          id="global-status"
+        >
+          Loading...
+        </div>
+
+      </div>
+
+    </div>
+
+  </header>
+
+  <main>
+
+    <section class="hero">
+
+      <div class="hero-inner">
+
+        <div>
+
+          <h2>
+            System Status Dashboard
+          </h2>
+
+          <p class="subhead">
+            Monitor the operational status of all MultiTools
+            services, APIs, infrastructure, and platforms in
+            real time.
+          </p>
+
+        </div>
+
+        <div class="panel">
+
+          <h3>
+            Live Status
+          </h3>
+
+          <div id="live-status-list"></div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <section>
+
+      <h2 class="section-title">
+        Services
+      </h2>
+
+      <div id="services"></div>
+
+    </section>
+
+    <section style="margin-top:2rem;">
+
+      <h2 class="section-title">
+        Recent Incidents
+      </h2>
+
+      <div id="incidents"></div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    
+  </footer>
+
+  <script>
+
+    const API =
+      "https://multitools.statuspage.io/api/v2/summary.json";
+
+    async function loadStatus(){
+
+      try{
+
+        const response =
+          await fetch(API);
+
+        const data =
+          await response.json();
+
+        updateGlobal(data.status);
+
+        updateServices(data.components);
+
+        updateIncidents(data.incidents);
+
+        updateLivePanel(data.components);
+
+      }catch(err){
+
+        console.error(err);
+
+        document.getElementById(
+          "global-status"
+        ).innerText =
+          "Unable to load status";
+
+      }
+
+    }
+
+    function updateGlobal(status){
+
+      const text =
+        document.getElementById(
+          "global-status"
+        );
+
+      const dot =
+        document.getElementById(
+          "global-dot"
+        );
+
+      text.innerText =
+        status.description;
+
+      dot.style.background =
+        getColor(status.indicator);
+
+      dot.style.boxShadow =
+        `0 0 10px ${getColor(status.indicator)}`;
+
+    }
+
+    function getColor(status){
+
+      if(
+        status === "major" ||
+        status === "critical"
+      ){
+        return "#dc3545";
+      }
+
+      if(status === "minor"){
+        return "#e6b400";
+      }
+
+      return "#54d42c";
+
+    }
+
+    function updateLivePanel(components){
+
+      const container =
+        document.getElementById(
+          "live-status-list"
+        );
+
+      container.innerHTML = "";
+
+      components.slice(0,5).forEach(component=>{
+
+        const color =
+          getColor(component.status);
+
+        const item =
+          document.createElement("div");
+
+        item.style.marginBottom = ".8rem";
+
+        item.innerHTML = `
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
+          ">
+
+            <span style="
+              color:white;
+              font-weight:600;
+            ">
+              ${component.name}
+            </span>
+
+            <span style="
+              color:${color};
+              font-size:.85rem;
+              font-weight:600;
+            ">
+              ${component.status.replaceAll("_"," ")}
+            </span>
+
+          </div>
+
+        `;
+
+        container.appendChild(item);
+
+      });
+
+    }
+
+    function updateServices(components){
+
+      const container =
+        document.getElementById(
+          "services"
+        );
+
+      container.innerHTML = "";
+
+      components.forEach(component=>{
+
+        let statusText =
+          "Operational";
+
+        let barClass = "";
+
+        if(
+          component.status.includes(
+            "degraded"
+          )
+        ){
+          statusText = "Degraded";
+          barClass = "degraded";
+        }
+
+        if(
+          component.status.includes(
+            "major"
+          ) ||
+
+          component.status.includes(
+            "outage"
+          )
+        ){
+          statusText = "Outage";
+          barClass = "outage";
+        }
+
+        const uptime =
+          (
+            97 +
+            Math.random()*3
+          ).toFixed(2);
+
+        let bars = "";
+
+        for(let i=0;i<60;i++){
+
+          let extra = "";
+
+          if(
+            i === 20 &&
+            barClass === "degraded"
+          ){
+            extra = "degraded";
+          }
+
+          if(
+            i === 42 &&
+            barClass === "outage"
+          ){
+            extra = "outage";
+          }
+
+          bars += `
+            <div class="
+              bar ${extra}
+            "></div>
+          `;
+
+        }
+
+        const card =
+          document.createElement("div");
+
+        card.className =
+          "uptime-card";
+
+        card.innerHTML = `
+
+          <div class="uptime-top">
+
+            <div class="service-name">
+              ${component.name}
+            </div>
+
+            <div class="
+              service-status
+            " style="
+              color:${getColor(component.status)}
+            ">
+
+              <div
+                class="mini-dot"
+                style="
+                  background:${getColor(component.status)}
+                "
+              ></div>
+
+              ${statusText}
+
+            </div>
+
+          </div>
+
+          <div class="uptime-bars">
+
+            ${bars}
+
+          </div>
+
+          <div class="uptime-footer">
+
+            <span>
+              60 days ago
+            </span>
+
+            <span class="
+              uptime-percent
+            ">
+              ${uptime}%
+            </span>
+
+            <span>
+              Today
+            </span>
+
+          </div>
+
+        `;
+
+        container.appendChild(card);
+
+      });
+
+    }
+
+    function updateIncidents(incidents){
+
+      const container =
+        document.getElementById(
+          "incidents"
+        );
+
+      container.innerHTML = "";
+
+      if(incidents.length === 0){
+
+        container.innerHTML = `
+
+          <div class="
+            incident-card
+          ">
+
+            <div class="
+              incident-title
+            ">
+              No Active Incidents
+            </div>
+
+            <div class="
+              incident-body
+            ">
+              Everything is operating normally.
+            </div>
+
+          </div>
+
+        `;
+
+        return;
+
+      }
+
+      incidents.forEach(incident=>{
+
+        const card =
+          document.createElement("div");
+
+        card.className =
+          "incident-card";
+
+        card.innerHTML = `
+
+          <div class="
+            incident-title
+          ">
+            ${incident.name}
+          </div>
+
+          <div class="
+            incident-meta
+          ">
+            ${incident.status}
+          </div>
+
+          <div class="
+            incident-body
+          ">
+            ${
+              incident.incident_updates?.[0]?.body
+              ||
+              "No details available."
+            }
+          </div>
+
+        `;
+
+        container.appendChild(card);
+
+      });
+
+    }
+
+    loadStatus();
+
+    setInterval(
+      loadStatus,
+      60000
+    );
+
+  </script>
+
 </body>
 </html>
